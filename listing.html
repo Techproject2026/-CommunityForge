@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    body {
+      background-color: #FAF8F5;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #333333;
+    }
+
+    .navbar {
+      background-color: #f5b616;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #2e5cf2;
+    }
+    .logo-container {
+      font-weight: bold;
+      font-size: 20px;
+      color: #1A3020;
+      cursor: pointer;
+    }
+    .nav-links { display: flex; align-items: center; gap: 12px; }
+    
+    .nav-btn {
+      background-color: #2e5cf2; 
+      color: #ffffff; 
+      padding: 8px 18px; 
+      border-radius: 20px; 
+      font-weight: 500; 
+      border: none; 
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    .nav-btn:hover { background-color: #1232b3; }
+
+    .container { max-width: 800px; margin: 40px auto; padding: 0 20px; text-align: left; }
+    h1 { font-size: 32px; font-weight: 600; margin: 0 0 8px 0; color: #1A3020; }
+    .subtitle { font-size: 16px; color: #555555; margin: 0 0 30px 0; }
+    
+    .tool-list { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 20px; }
+    
+    .tool-card { background-color: #FFFDF0; border: 2px solid #2e5cf2; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .tool-info { flex-grow: 1; }
+    .tool-info h3 { margin: 0 0 5px 0; font-size: 18px; color: #2e5cf2; }
+    .tool-info p { margin: 0 0 8px 0; font-size: 14px; color: #666666; }
+ 
+    .contact-details { font-size: 12px; color: #555555; line-height: 1.4; border-top: 1px dashed #CDD1C7; padding-top: 8px; }
+    .tool-type { font-weight: bold; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; color: #f5b616; background: #1A3020; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+
+    .delete-btn { background-color: #f5b616; color: #1A3020; border: 1px solid #2e5cf2; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: bold; transition: background-color 0.2s; margin-left: 15px; }
+    .delete-btn:hover { background-color: #d19a0f; color: white; }
+
+    .action-links { display: flex; gap: 15px; margin-top: 30px; }
+    .add-more-btn { background-color: #2e5cf2; color: white; border: 2px solid #f5b616; padding: 12px 24px; border-radius: 30px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; }
+    .add-more-btn:hover { background-color: #1232b3; }
+  </style>
+<title> CommunityForge Listings </title>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo-container" onclick="navigatePage('CommunityForge_pg1.html')">CommunityForge</div>
+    <div class="nav-links">
+      <button class="nav-btn" onclick="navigatePage('CommunityForge_pg1.html')">Home</button>
+      <button class="nav-btn" onclick="navigatePage('tools.html')">Items</button>
+      <button class="nav-btn" onclick="navigatePage('skills.html')">Skill</button>
+      <button class="nav-btn" onclick="navigatePage('listing.html')">Listings</button>
+    </div>
+</div>
+
+<div class="container">
+    <h1>All Community Listings</h1>
+    <p class="subtitle">Browse both items and skills submitted by the community in one space.</p>
+    
+    <div class="tool-list" id="displayDirectory">
+      
+    </div>
+
+    <div class="action-links">
+        <div class="add-more-btn" onclick="navigatePage('tools.html')">List an Item</div>
+        <div class="add-more-btn" onclick="navigatePage('skills.html')">List a Skill</div>
+    </div>
+</div>
+
+<script>
+  function navigatePage(url) {
+    if (url) {
+      window.location.href = url;
+    }
+  }
+
+  function getOrCreateUserId() {
+    var userId = localStorage.getItem('forgeUserId');
+    if (!userId) {
+      userId = 'user_' + Math.random().toString(36).substr(2, 9) + Date.now();
+      localStorage.setItem('forgeUserId', userId);
+    }
+    return userId;
+  }
+
+  function loadListings() {
+    var directory = document.getElementById('displayDirectory');
+    var currentListings = JSON.parse(localStorage.getItem('communityForgeListings')) || [];
+    var currentUserId = getOrCreateUserId();
+    
+    directory.innerHTML = "";
+
+    if (currentListings.length === 0) {
+      directory.innerHTML = "<p style='color: #666666;'>No listings yet. Go back to add something!</p>";
+      return;
+    }
+
+    currentListings.forEach(function(listing) {
+      var card = document.createElement('div');
+      card.className = 'tool-card';
+      
+      var safeId = listing.id.replace(/[^a-z0-9]/gi, '_');
+      var apiNamespace = "communityforge2026"; 
+
+      var controlButtonHtml = "";
+      var viewsHtml = "";
+
+      // Check if the current viewer is the owner
+      if (listing.ownerId === currentUserId) {
+        controlButtonHtml = `<button class="delete-btn" onclick="deleteListing('${listing.id}')">Delete</button>`;
+        // Only show views container to the owner
+        viewsHtml = `
+          <div style="font-size: 12px; color: #2e5cf2; font-weight: bold; margin-bottom: 8px;">
+            <span id="views-${listing.id}">Loading views...</span> views
+          </div>
+        `;
+      } else {
+        controlButtonHtml = `<button class="delete-btn" style="background-color: #2e5cf2; color: white; border-color: #f5b616;" onclick="borrowItem('${listing.id}')">Borrow</button>`;
+        viewsHtml = ""; // Keep blank for borrowers
+      }
+
+      card.innerHTML = `
+        <div class="tool-info">
+          <span class="tool-type">${listing.type || 'Item'}</span>
+          <h3>${listing.name}</h3>
+          <p>${listing.desc}</p>
+          ${viewsHtml}
+          <div class="contact-details">
+            <div><strong>Listed by:</strong> ${listing.creatorName || 'A Neighbor'}</div>
+            <div><strong>Email:</strong> ${listing.email}</div>
+            <div><strong>Phone:</strong> ${listing.phone}</div>
+            <div><strong>Location:</strong> ${listing.address}</div>
+          </div>
+        </div>
+        ${controlButtonHtml}
+      `;
+      directory.appendChild(card);
+
+      // Hit API to track every visit, but we only try to display it if the view element exists
+      fetch(`https://jasoncameron.dev{apiNamespace}/${safeId}`)
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          var viewSpan = document.getElementById(`views-${listing.id}`);
+          if (viewSpan && data && data.value) {
+            viewSpan.innerText = data.value;
+          }
+        })
+        .catch(function() {
+          var viewSpan = document.getElementById(`views-${listing.id}`);
+          if (viewSpan) {
+            viewSpan.innerText = "1";
+          }
+        });
+    });
+  }
+
+  function borrowItem(id) {
+    var currentListings = JSON.parse(localStorage.getItem('communityForgeListings')) || [];
+    var target = currentListings.find(item => item.id === id);
+    
+    if (!target) return;
+    
+    var borrowerName = localStorage.getItem('forgeUsername') || "A Neighbor";
+    var borrowerEmail = localStorage.getItem('forgeUserEmail') || "Not provided";
+    var borrowerPhone = localStorage.getItem('forgeUserPhone') || "Not provided";
+    var borrowerZip = localStorage.getItem('forgeUserZip') || "Not provided";
+    
+    if (target.email === "Not provided" || !target.email) {
+      alert("This listing does not have a valid email address!");
+      return;
+    }
+
+    var subject = encodeURIComponent("CommunityForge Notification: Someone wants to borrow your " + target.name);
+    var body = encodeURIComponent(
+      "Hello,\n\n" +
+      "Good news! A user on CommunityForge wants to borrow your listed item/skill: '" + target.name + "'.\n\n" +
+      "Here is the logged-in profile information of the person requesting to borrow it so you can get in touch with them:\n" +
+      "- Borrower Name: " + borrowerName + "\n" +
+      "- Borrower Email: " + borrowerEmail + "\n" +
+      "- Borrower Phone: " + borrowerPhone + "\n" +
+      "- Borrower Location Zip: " + borrowerZip + "\n\n" +
+      "Please reply directly to this email to coordinate your drop-off or pickup details.\n\n" +
+      "Best regards,\n" +
+      "CommunityForge Automated Request Handler"
+    );
+
+    window.location.href = "mailto:" + target.email + "?subject=" + subject + "?body=" + body;
+  }
+
+  function deleteListing(id) {
+    var currentListings = JSON.parse(localStorage.getItem('communityForgeListings')) || [];
+    var currentUserId = getOrCreateUserId();
+    
+    var listingToDelete = currentListings.find(item => item.id === id);
+    if (listingToDelete && listingToDelete.ownerId !== currentUserId) {
+      alert("Error: You can only delete your own listings!");
+      return;
+    }
+
+    var updatedListings = currentListings.filter(item => item.id !== id);
+    localStorage.setItem('communityForgeListings', JSON.stringify(updatedListings));
+    loadListings();
+  }
+
+  window.onload = loadListings;
+</script>
+
+</body>
+</html>

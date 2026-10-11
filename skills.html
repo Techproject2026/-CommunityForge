@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    body {
+      background-color: #FAF8F5;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #333333;
+    }
+
+     .navbar {
+      background-color: #f5b616;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #2e5cf2;
+    }
+    .logo-container {
+      font-weight: bold;
+      font-size: 20px;
+      color: #1A3020;
+      cursor: pointer;
+    }
+    .nav-links { display: flex; align-items: center; gap: 12px; }
+    
+    .nav-btn {
+      background-color: #2e5cf2; 
+      color: #ffffff; 
+      padding: 8px 18px; 
+      border-radius: 20px; 
+      font-weight: 500; 
+      border: none; 
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    .nav-btn:hover { background-color: #1232b3; }
+
+    .container { max-width: 800px; margin: 40px auto; padding: 0 20px; text-align: left; }
+    h1 { font-size: 32px; font-weight: 600; margin: 0 0 8px 0; color: #1A3020; }
+    .subtitle { font-size: 16px; color: #555555; margin: 0 0 30px 0; }
+    
+    .upload-box { border: 2px dashed #2e5cf2; border-radius: 16px; background-color: #FFFDF0; padding: 45px 20px; text-align: center; cursor: pointer; margin-bottom: 25px; display: block; color: #2e5cf2; font-weight: bold; }
+    .upload-box:hover { background-color: #FFF9C4; }
+   
+    .input-field { width: 100%; padding: 15px 20px; font-size: 15px; border: 2px solid #2e5cf2; border-radius: 12px; box-sizing: border-box; margin-bottom: 15px; background-color: #ffffff; }
+    
+    .submit-btn { width: 100%; background-color: #2e5cf2; color: #ffffff; border: 2px solid #f5b616; padding: 18px 0; font-size: 16px; font-weight: 600; border-radius: 30px; cursor: pointer; transition: background-color 0.2s; margin-top: 15px; }
+    .submit-btn:hover { background-color: #1232b3; }
+    
+    .back-btn { display: inline-block; margin-top: 25px; color: #2e5cf2; font-size: 14px; cursor: pointer; text-decoration: underline; font-weight: bold; }
+  </style>
+<title> CommunityForge Skill learner </title>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo-container" onclick="navigatePage('CommunityForge_pg1.html')">CommunityForge</div>
+    <div class="nav-links">
+      <button class="nav-btn" onclick="navigatePage('CommunityForge_pg1.html')">Home</button>
+      <button class="nav-btn" onclick="navigatePage('tools.html')">Items</button>
+      <button class="nav-btn" onclick="navigatePage('skills.html')">Skill</button>
+      <button class="nav-btn" onclick="navigatePage('listing.html')">Listings</button>
+    </div>
+</div>
+<div class="container">
+    <h1>List a Skill</h1>
+    <p class="subtitle">Fill out the details below to offer your skill to the community directory.</p>
+    
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="updateUploadStatus()">
+    <div class="upload-box" onclick="document.getElementById('cameraInput').click()">
+      <span id="uploadText">Click to open camera and upload photo</span>
+    </div>
+
+    <input type="text" id="Name" class="input-field" placeholder="Name * Required">
+    <input type="text" id="toolName" class="input-field" placeholder="Skill Name * Required">
+    <input type="text" id="toolDesc" class="input-field" placeholder="Description * Required">
+
+    <input type="email" id="userEmail" class="input-field" placeholder="Your Email Address">
+    <input type="tel" id="userPhone" class="input-field" placeholder="Your Phone Number">
+    <input type="text" id="userAddress" class="input-field" placeholder="Your Learning Place Address or Zip Code">
+    
+    <button class="submit-btn" onclick="verifyAndSaveTool()">Submit and View Listings</button>
+    
+    <div class="back-btn" onclick="navigatePage('CommunityForge_pg1.html')">Back to Home</div>
+</div>
+
+<script>
+  function navigatePage(url) {
+    if (url) window.location.href = url;
+  }
+
+  function updateUploadStatus() {
+    var fileInput = document.getElementById('cameraInput');
+    if(fileInput.files.length > 0) {
+      document.getElementById('uploadText').innerText = "Photo Attached: " + fileInput.files.name;
+    }
+  }
+
+  function getOrCreateUserId() {
+    var userId = localStorage.getItem('forgeUserId');
+    if (!userId) {
+      userId = 'user_' + Math.random().toString(36).substr(2, 9) + Date.now();
+      localStorage.setItem('forgeUserId', userId);
+    }
+    return userId;
+  }
+
+  function verifyAndSaveTool() {
+    var name = document.getElementById('Name').value.trim();
+    var toolName = document.getElementById('toolName').value.trim();
+    var desc = document.getElementById('toolDesc').value.trim();
+    var email = document.getElementById('userEmail').value.trim();
+    var phone = document.getElementById('userPhone').value.trim();
+    var address = document.getElementById('userAddress').value.trim();
+    
+    if (toolName === "" || desc === "" || name === "") {
+      alert("Error: You must fill out your Name, Skill Name, and Description before submitting!");
+      return;
+    }
+
+    var currentListings = JSON.parse(localStorage.getItem('communityForgeListings')) || [];
+    currentListings.push({ 
+      id: 'listing_' + Math.random().toString(36).substr(2, 9) + Date.now(),
+      ownerId: getOrCreateUserId(),
+      type: "Skill",
+      creatorName: name,
+      name: toolName, 
+      desc: desc,
+      email: email ? email : "Not provided",
+      phone: phone ? phone : "Not provided",
+      address: address ? address : "Not provided"
+    });
+    localStorage.setItem('communityForgeListings', JSON.stringify(currentListings));
+
+    window.location.href = 'listing.html';
+  }
+
+  window.onload = function() {
+    document.getElementById('Name').value = localStorage.getItem('forgeUsername') || "";
+    document.getElementById('userEmail').value = localStorage.getItem('forgeUserEmail') || "";
+    document.getElementById('userPhone').value = localStorage.getItem('forgeUserPhone') || "";
+    document.getElementById('userAddress').value = localStorage.getItem('forgeUserZip') || "";
+  };
+</script>
+
+</body>
+</html>

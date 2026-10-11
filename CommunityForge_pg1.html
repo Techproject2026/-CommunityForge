@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+background-image: url('https://gstatic.com'); 
+background-repeat: no-repeat;
+background-size: cover;
+background-position:center;
+background-attachment: fixed;
+   }
+
+    .navbar {
+      background-color: #fcba03;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #E6E4DC;
+    }
+    .logo-container {
+      font-weight: bold;
+      font-size: 20px;
+      color: #020302;
+      cursor: pointer;
+    }
+    .nav-links { display: flex; align-items: center; gap: 12px; }
+    
+    .nav-btn {
+      background-color: #2e5cf2; 
+      color: #ffffff; 
+      padding: 8px 18px; 
+      border-radius: 20px; 
+      font-weight: 500; 
+      border: none; 
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    .nav-btn:hover { background-color: #035efc; }
+
+    .user-greeting {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1A3020;
+      background-color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 15px;
+      border: 2px solid #2e5cf2;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .user-greeting:hover {
+      border-color: #f5b616;
+      background-color: #FFFDF0;
+    }
+
+    .dropdown-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      margin-top: 25px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      border: 2px solid #2e5cf2;
+      transition: border-color 0.2s;
+    }
+    
+    .dropdown-card[open] {
+      border-color: #f5b616;
+    }
+
+    .dropdown-card summary {
+      padding: 18px 20px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #141414;
+      cursor: pointer;
+      list-style: none;
+      position: relative;
+      outline: none;
+      user-select: none;
+    }
+    
+    .dropdown-card summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .dropdown-card summary::after {
+      content: '+';
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+      font-weight: 400;
+      color: #2e5cf2;
+    }
+
+    .dropdown-card[open] summary::after {
+      content: '−';
+      color: #f5b616;
+    }
+
+    .dropdown-answer {
+      padding: 0 20px 20px 20px;
+      color: #333333;
+      line-height: 1.6;
+      font-size: 15px;
+      border-top: 1px solid #E6E4DC;
+      margin-top: 5px;
+      padding-top: 15px;
+      background-color: #FFFDF0;
+    }
+ 
+    .container { max-width: 800px; margin: 40px auto; padding: 0 20px; text-align: left; }
+    h1 { font-size: 32px; font-weight: 600; margin: 0 0 8px 0; color: #1A3020; }
+    .subtitle { font-size: 16px; color: #555555; margin: 0 0 30px 0; }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .modal-box {
+      background-color: #ffffff;
+      border: 4px solid transparent;
+      border-image: linear-gradient(to right, #2e5cf2 50%, #f5b616 50%) 1;
+      border-radius: 16px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .modal-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #2e5cf2;
+      margin: 0 0 5px 0;
+    }
+    .modal-subtitle {
+      font-size: 13px;
+      color: #f5b616;
+      font-weight: 600;
+      margin: 0 0 20px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .modal-input {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 15px;
+      border: 2px solid #2e5cf2;
+      border-radius: 8px;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+      margin-top: 5px;
+    }
+    .modal-input:focus {
+      outline: none;
+      border-color: #f5b616;
+    }
+    
+    .modal-btn {
+      background-color: #2e5cf2;
+      color: white;
+      border: 2px solid #f5b616;
+      padding: 12px 25px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 20px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+    .modal-btn:hover {
+      background-color: #1232b3;
+    }
+
+    .dropdown-cards {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    .button-tile {
+      background: white;
+      border: 2px solid #2e5cf2;
+      border-radius: 12px;
+      padding: 15px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .button-tile:hover {
+      border-color: #f5b616;
+      background-color: #FFFDF0;
+    }
+    .card-title {
+      display: block;
+      color: #2e5cf2;
+    }
+  </style>
+<title> CommunityForge Homepage </title>
+</head>
+<body>
+
+<div class="modal-overlay" id="loginModal" style="display: none;">
+  <div class="modal-box">
+    <div class="modal-title">CommunityForge Profile</div>
+    <div class="modal-subtitle">Setup Account Context</div>
+    <input type="text" id="loginUsername" class="modal-input" placeholder="Enter Name">
+    <input type="email" id="loginEmail" class="modal-input" placeholder="Enter Email">
+    <input type="tel" id="loginPhone" class="modal-input" placeholder="Enter Phone">
+    <input type="text" id="loginZip" class="modal-input" placeholder="Enter Zip Code">
+    <button class="modal-btn" onclick="submitLogin()">Save Profile</button>
+  </div>
+</div>
+
+<marquee style="font-size: 25px;"><b>Welcome to CommunityForge</b></marquee>
+<div class="navbar">
+    <div class="logo-container" onclick="navigatePage('CommunityForge_pg1.html')" role="button" tabindex="0" style="cursor: pointer; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">
+CommunityForge
+</div>
+
+    <div class="nav-links">
+      <span id="navGreeting" class="user-greeting" style="display: none;" onclick="openProfileEdit()"></span>
+      <button class="nav-btn" onclick="navigatePage('tools.html')">Items</button>
+      <button class="nav-btn" onclick="navigatePage('skills.html')">Skill</button>
+      <button class="nav-btn" onclick="navigatePage('listing.html')">Listings</button> 
+    </div>
+</div>
+    
+<div class="dropdown-cards">
+  <button class="button-tile" onclick="navigatePage('listing.html?filter=my-listings')"><b class="card-title">Check the views of your listing</b><span class="card-desc"></span></button>
+  <button class="button-tile" onclick="navigatePage('informationpage.html')"><b class="card-title">About CommunityForge</b><span class="card-desc"></span></button>
+</div>
+
+<h4> Click each card to find out the answer to each FAQs</h4>
+<details class="dropdown-card">
+    <summary>Why you should list in CommunityForge?</summary>
+    <div class="dropdown-answer">
+         listing your items and skills helps reduce waste, saves your neighbors money, and fosters strong local friendships. By sharing what you have, you help build a more sustainable and supportive community!
+    </div>
+</details>
+
+<details class="dropdown-card">
+    <summary>Why you should you use CommunityForge?</summary>
+    <div class="dropdown-answer">
+       Using CommunityForge will help you save money and make new friends and we would love for everyone in our community to be together and help when needed and will make your social interaction better.      
+    </div>
+</details>
+
+<details class="dropdown-card">
+    <summary>What if my leaner/borrower doesn't contact me?</summary>
+    <div class="dropdown-answer">
+       In a case where your borrower doesn't contact you, that would be an issue that you communicate directly through the contact details provided in their email request. Check your spam folders or reach out using their provided phone number.
+    </div>
+</details>
+
+<details class="dropdown-card">
+    <summary>What if my borrower doesn't give me the item before the due date?</summary>
+    <div class="dropdown-answer">
+        Communicate openly and check in with your borrower. Often, unexpected scheduling delays happen, and a quick text message or phone call is all it takes to resolve the return timeframe smoothly.
+    </div>
+</details>
+
+<details class="dropdown-card">
+    <summary>What if you have found a item or a skill from someone else that you know and you would like to unskill them or unborrow that?</summary>
+    <div class="dropdown-answer">
+       Communicate with the original lister to let them know plans have changed. They can update their availability on their profile, or you can send a quick note to cancel the arrangement so other neighbors can utilize the item or skill instead. We don't have unborrow button because if we did it would of not increase your socializing and reduse it instead.
+    </div>
+</details>
+
+<script>
+  function navigatePage(url) {
+    if (url) {
+      window.location.href = url;
+    }
+  }
+</script>
+
+</body>
+</html>
